@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Syed Rafay Habib | Front-End Developer</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollToPlugin.min.js"></script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+    
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        rafay: {
+                            bg: '#050505',
+                            card: '#0E0E0E',
+                            border: '#262626',
+                            red: '#D32F2F', 
+                            redDim: '#7f1d1d',
+                            text: '#EDEDED',
+                            muted: '#888888'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Syne', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #050505;
+            color: #EDEDED;
+            overflow-x: hidden;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #050505;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #D32F2F;
+            border-radius: 4px;
+        }
+
+        /* Grid Patterns */
+        .bento-grid {
+            display: grid;
+            grid-template-columns: repeat(1, 1fr);
+            gap: 1rem;
+            padding: 1rem;
+        }
+        
+        @media (min-width: 768px) {
+            .bento-grid {
+                grid-template-columns: repeat(12, 1fr);
+                padding: 2rem;
+                gap: 1.5rem;
+            }
+        }
+
+        /* Card Styles */
+        .bento-card {
+            background-color: #0E0E0E;
+            border: 1px solid #262626;
+            border-radius: 1.5rem;
+            overflow: hidden;
+            position: relative;
+            transition: border-color 0.3s ease;
+        }
+
+        .bento-card:hover {
+            border-color: #D32F2F;
+        }
+
+        /* Noise Texture Overlay */
+        .noise-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.03;
+            pointer-events: none;
+            z-index: 9999;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
+
+        /* Typography Utilities */
+        .text-huge {
+            font-size: clamp(3rem, 10vw, 7rem);
+            line-height: 0.9;
+            letter-spacing: -0.02em;
+        }
+
+        .nav-link::before {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: #D32F2F;
+            transition: width 0.3s ease;
+        }
+        .nav-link:hover::before {
+            width: 100%;
+        }
+
+        /* Marquee Animation */
+        .marquee-container {
+            overflow: hidden;
+            white-space: nowrap;
+        }
+        .marquee-content {
+            display: inline-block;
+            animation: scroll 3s linear infinite;
+        }
+        @keyframes scroll {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <div class="noise-overlay"></div>
+
+    <nav class="fixed top-6 left-1/2 -translate-x-1/2 z-50 bg-rafay-card/80 backdrop-blur-md border border-rafay-border rounded-full px-6 py-3 flex items-center gap-8 shadow-2xl shadow-black/50 w-[90%] max-w-lg justify-between md:justify-center">
+        <div class="font-display font-bold text-xl text-white md:absolute md:left-6 cursor-pointer" onclick="scrollToTop()">
+            Rafay<span class="text-rafay-red">.</span>
+        </div>
+        
+        <div class="hidden md:flex items-center gap-8 text-sm font-medium text-rafay-muted">
+            <button onclick="scrollToSection('about')" class="nav-link hover:text-white transition-colors relative">About</button>
+            <button onclick="scrollToSection('experience')" class="nav-link hover:text-white transition-colors relative">Experience</button>
+            <button onclick="scrollToSection('projects')" class="nav-link hover:text-white transition-colors relative">Projects</button>
+            <button onclick="scrollToSection('contact')" class="nav-link hover:text-white transition-colors relative">Contact</button>
+        </div>
+
+        <div class="md:hidden text-white cursor-pointer" onclick="toggleMobileMenu()">
+            <i data-lucide="menu"></i>
+        </div>
+    </nav>
+
+    <div id="mobile-menu" class="fixed inset-0 bg-rafay-bg z-40 transform translate-x-full transition-transform duration-300 flex flex-col items-center justify-center gap-8">
+        <button onclick="toggleMobileMenu()" class="absolute top-6 right-6 text-white"><i data-lucide="x" class="w-8 h-8"></i></button>
+        <button onclick="scrollToSection('about'); toggleMobileMenu()" class="text-4xl font-display font-bold hover:text-rafay-red">About</button>
+        <button onclick="scrollToSection('experience'); toggleMobileMenu()" class="text-4xl font-display font-bold hover:text-rafay-red">Experience</button>
+        <button onclick="scrollToSection('projects'); toggleMobileMenu()" class="text-4xl font-display font-bold hover:text-rafay-red">Projects</button>
+        <button onclick="scrollToSection('contact'); toggleMobileMenu()" class="text-4xl font-display font-bold hover:text-rafay-red">Contact</button>
+    </div>
+
+    <main class="bento-grid pt-24 md:pt-32 max-w-[1600px] mx-auto">
+
+        <div class="col-span-1 md:col-span-12 flex flex-col justify-center items-center text-center py-12 md:py-20 min-h-[60vh]">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-rafay-border bg-rafay-card text-xs text-rafay-muted mb-6 animate-fade-in">
+                <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+                Currently @ Alfonick
+            </div>
+            <h1 class="font-display text-huge font-bold text-white tracking-tighter leading-none mb-6 hero-text opacity-0 translate-y-10">
+                SYED RAFAY<br>
+                <span class="text-rafay-border">HABIB</span> <span class="text-rafay-red">.</span>
+            </h1>
+            <p class="text-rafay-muted max-w-2xl text-lg md:text-xl hero-text opacity-0 translate-y-10">
+                Front-End Developer building high-performance web applications with <span class="text-white font-bold">React.js, Next.js, and Tailwind CSS</span>. Skilled in creating interactive UI animations with GSAP.
+            </p>
+        </div>
+
+        <div id="about" class="col-span-1 md:col-span-8 bento-card p-8 md:p-12 flex flex-col justify-between min-h-[400px] group">
+            <div>
+                <div class="flex justify-between items-start mb-8">
+                    <div class="p-3 bg-rafay-border/30 rounded-full text-rafay-red">
+                        <i data-lucide="user" class="w-6 h-6"></i>
+                    </div>
+                    <i data-lucide="code-2" class="text-rafay-border group-hover:text-rafay-red transition-colors w-8 h-8"></i>
+                </div>
+                <h2 class="text-3xl md:text-4xl font-display font-bold mb-6">Technical &<br>Analytical.</h2>
+                <p class="text-rafay-muted text-lg leading-relaxed max-w-3xl">
+                    I possess hands-on experience in building responsive web applications and interactive UIs. Beyond frontend, I have working knowledge of <span class="text-white">.NET and MySQL</span> for backend collaboration and experience in data analysis using <span class="text-white">Excel and Power BI</span>.
+                </p>
+            </div>
+            <div class="mt-8">
+                <div class="flex flex-wrap gap-3">
+                    <span class="px-4 py-2 rounded-full bg-rafay-bg border border-rafay-border text-sm hover:border-rafay-red transition-colors">React.js</span>
+                    <span class="px-4 py-2 rounded-full bg-rafay-bg border border-rafay-border text-sm hover:border-rafay-red transition-colors">MySQL</span>
+                    <span class="px-4 py-2 rounded-full bg-rafay-bg border border-rafay-border text-sm hover:border-rafay-red transition-colors">GSAP</span>
+                    <span class="px-4 py-2 rounded-full bg-rafay-bg border border-rafay-border text-sm hover:border-rafay-red transition-colors">Tailwind</span>
+                    <span class="px-4 py-2 rounded-full bg-rafay-bg border border-rafay-border text-sm hover:border-rafay-red transition-colors">.NET</span>
+                    <span class="px-4 py-2 rounded-full bg-rafay-bg border border-rafay-border text-sm hover:border-rafay-red transition-colors">Power BI</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-span-1 md:col-span-4 bento-card p-8 flex flex-col justify-center relative overflow-hidden group">
+            <div class="absolute top-0 right-0 w-64 h-64 bg-rafay-red/10 rounded-full blur-[80px] -translate-y-1/2 translate-x-1/2 group-hover:bg-rafay-red/20 transition-colors duration-500"></div>
+            
+            <div class="relative z-10">
+                <div class="mb-6">
+                    <h3 class="text-rafay-muted uppercase tracking-widest text-xs font-bold mb-2">Education</h3>
+                    <div class="w-12 h-1 bg-rafay-red mb-6"></div>
+                </div>
+                
+                <h4 class="text-2xl font-bold text-white mb-2">BS Information Technology</h4>
+                <div class="flex items-center gap-2 text-rafay-red mb-4">
+                    <i data-lucide="graduation-cap" class="w-5 h-5"></i>
+                    <span class="font-bold">Sir Syed University</span>
+                </div>
+                <p class="text-sm text-rafay-muted leading-relaxed mb-4">
+                    2020 - 2024
+                </p>
+                <div class="border-t border-rafay-border pt-4">
+                    <p class="text-xs text-rafay-muted font-mono">CERTIFICATIONS:</p>
+                    <ul class="text-xs text-white mt-2 space-y-1">
+                        <li>• Intro to Cyber Security (Jan 24)</li>
+                        <li>• Front-end by Interns.pk (Sep 23)</li>
+                        <li>• Software Quality Assurance</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-span-1 md:col-span-12 bento-card py-6 bg-rafay-red border-none flex items-center overflow-hidden">
+            <div class="marquee-container w-full">
+                <div class="marquee-content font-display font-bold text-4xl md:text-6xl text-black flex gap-12 items-center uppercase">
+                    <span>React.js</span> <span class="text-white">✦</span>
+                    <span>GSAP Animations</span> <span class="text-white">✦</span>
+                    <span>Data Analysis</span> <span class="text-white">✦</span>
+                    <span>Next.js</span> <span class="text-white">✦</span>
+                    <span>Power BI</span> <span class="text-white">✦</span>
+                    <span>React.js</span> <span class="text-white">✦</span>
+                    <span>GSAP Animations</span> <span class="text-white">✦</span>
+                    <span>Data Analysis</span> <span class="text-white">✦</span>
+                    <span>Next.js</span> <span class="text-white">✦</span>
+                </div>
+            </div>
+        </div>
+
+        <div id="experience" class="col-span-1 md:col-span-12 bento-card p-8 md:p-12 bg-rafay-bg border-rafay-border">
+            <h2 class="font-display text-3xl font-bold text-white mb-8">Experience</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-0">
+                
+                <div class="border-b md:border-b-0 md:border-r border-rafay-border pb-8 md:pb-0 md:pr-8">
+                    <span class="text-rafay-red font-mono text-sm mb-4 block">OCT 2025 – PRESENT</span>
+                    <h3 class="text-xl font-bold text-white mb-2">Front-End Developer</h3>
+                    <h4 class="text-rafay-muted font-bold text-sm mb-4">ALFONICK</h4>
+                    <p class="text-rafay-muted text-sm leading-relaxed">
+                        Developing interactive UIs with React.js & Tailwind. Implementing smooth GSAP animations and ensuring mobile-first responsiveness. Collaborating with backend teams on high-quality web apps.
+                    </p>
+                </div>
+
+                <div class="border-b md:border-b-0 md:border-r border-rafay-border pb-8 md:pb-0 md:px-8">
+                    <span class="text-rafay-red font-mono text-sm mb-4 block">MAY 2024 - FEB 2025</span>
+                    <h3 class="text-xl font-bold text-white mb-2">Front-End React Dev</h3>
+                    <h4 class="text-rafay-muted font-bold text-sm mb-4">JEENI TECH</h4>
+                    <p class="text-rafay-muted text-sm leading-relaxed">
+                        Managed and maintained large volumes of structured data using Microsoft Excel, applying formulas, filters, and PivotTables for accurate reporting and analysis, while utilizing ERP software to handle sales records, inventory tracking, and daily operational tasks. Prepared and updated administrative reports to support business operations and decision-making, and collaborated with cross-functional teams to ensure smooth administrative workflows and timely data updates.
+                    </p>
+                </div>
+
+                <div class="md:pl-8">
+                    <span class="text-rafay-red font-mono text-sm mb-4 block">JUL 2023 - MAR 2024</span>
+                    <h3 class="text-xl font-bold text-white mb-2">Jr. Front-End Dev</h3>
+                    <h4 class="text-rafay-muted font-bold text-sm mb-4">PICS IMMIGRATION</h4>
+                    <p class="text-rafay-muted text-sm leading-relaxed">
+                        Applied familiarity with UI libraries like Bootstrap and Tailwind CSS. [cite_start]Focused on responsive web design and mobile-first approaches [cite: 27-28].
+                    </p>
+                </div>
+
+            </div>
+        </div>
+
+        <div id="projects" class="col-span-1 md:col-span-12 pt-12 pb-4">
+            <h2 class="font-display text-4xl md:text-6xl font-bold text-white">Featured Work <span class="text-rafay-red">.</span></h2>
+        </div>
+
+        <div class="col-span-1 md:col-span-7 bento-card min-h-[450px] group overflow-hidden cursor-pointer">
+                        <div class="absolute inset-0 bg-[url('AR-Project.png')] bg-cover bg-center transition-transform duration-700 group-hover:scale-105 opacity-40 group-hover:opacity-60"></div>
+            <div class="absolute inset-0 bg-gradient-to-t from-rafay-bg via-transparent to-transparent"></div>
+            
+            <div class="absolute bottom-0 left-0 p-8 w-full">
+                <div class="flex justify-between items-end">
+                    <div>
+                        <h3 class="text-3xl font-bold text-white mb-2">Augmented Book (AR)</h3>
+                        <p class="text-rafay-muted max-w-md">Interactive AR book using Unity & Vuforia. [cite_start]Uses C# scripts for animations to make reading engaging[cite: 34, 35].</p>
+                    </div>
+                    <div class="w-12 h-12 rounded-full bg-rafay-red flex items-center justify-center text-white translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
+                        <i data-lucide="arrow-right"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-span-1 md:col-span-5 bento-card min-h-[450px] group overflow-hidden cursor-pointer relative flex flex-col p-8 bg-rafay-card">
+            <div class="font-mono text-sm text-rafay-muted mb-auto">
+                const skills = {<br>
+                &nbsp;&nbsp;frontend: "React, GSAP",<br>
+                &nbsp;&nbsp;analysis: "Power BI"<br>
+                }
+            </div>
+            
+            <div class="relative z-10 mt-8">
+                <h3 class="text-3xl font-bold text-white mb-2">Performance & UI</h3>
+                <p class="text-rafay-muted mb-6">Continuously improving UI performance and overall user experience across projects, ensuring cross-browser compatibility.</p>
+                
+                <div class="w-full h-40 bg-rafay-border/30 rounded-lg border border-rafay-border flex items-center justify-center group-hover:border-rafay-red transition-colors overflow-hidden">
+                    <span class="text-rafay-muted font-mono">System Architecture</span>
+                </div>
+            </div>
+        </div>
+
+        <div id="contact" class="col-span-1 md:col-span-12 flex flex-col md:flex-row gap-8 mt-12">
+            
+            <div class="w-full md:w-1/2 bento-card p-8 md:p-12 flex flex-col justify-between bg-rafay-red border-none text-black">
+                <div>
+                    <h2 class="text-4xl md:text-6xl font-display font-bold mb-4">Let's work<br>together.</h2>
+                    <p class="font-medium text-black/70 text-xl">
+                        Based in Karachi, Pakistan.
+                    </p>
+                </div>
+                <div class="mt-12">
+                    <a href="mailto:rafayhabib7@gmail.com" class="text-xl md:text-2xl font-bold underline decoration-2 underline-offset-4 hover:text-white transition-colors block mb-2">rafayhabib7@gmail.com</a>
+                    <a href="tel:+923420290309" class="text-lg md:text-xl font-bold hover:text-white transition-colors block">+92 342 0290309</a>
+                    
+                    <div class="flex gap-4 mt-6">
+                        <a href="https://linkedin.com/in/rafay-habib" target="_blank" class="w-10 h-10 rounded-full bg-black/10 flex items-center justify-center hover:bg-black hover:text-white transition-colors cursor-pointer"><i data-lucide="linkedin"></i></a>
+                        <div class="w-10 h-10 rounded-full bg-black/10 flex items-center justify-center hover:bg-black hover:text-white transition-colors cursor-pointer"><i data-lucide="github"></i></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="w-full md:w-1/2 bento-card p-8 md:p-12">
+                <form onsubmit="event.preventDefault(); alert('Message Sent!')" class="space-y-6">
+                    <div class="space-y-2">
+                        <label class="text-sm font-bold text-rafay-muted">WHAT'S YOUR NAME?</label>
+                        <input type="text" class="w-full bg-transparent border-b border-rafay-border py-3 text-white focus:outline-none focus:border-rafay-red transition-colors" placeholder="Name">
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-sm font-bold text-rafay-muted">YOUR EMAIL</label>
+                        <input type="email" class="w-full bg-transparent border-b border-rafay-border py-3 text-white focus:outline-none focus:border-rafay-red transition-colors" placeholder="email@example.com">
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-sm font-bold text-rafay-muted">YOUR MESSAGE</label>
+                        <textarea class="w-full bg-transparent border-b border-rafay-border py-3 text-white focus:outline-none focus:border-rafay-red transition-colors min-h-[100px]" placeholder="Hi Rafay..."></textarea>
+                    </div>
+                    <button class="mt-4 px-8 py-4 bg-white text-black font-bold rounded-full hover:bg-rafay-red hover:text-white transition-all w-full md:w-auto">
+                        Send Message
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <div class="col-span-1 md:col-span-12 py-12 text-center text-rafay-muted text-sm">
+            <p>&copy; 2026 Syed Rafay Habib. All Rights Reserved.</p>
+        </div>
+
+    </main>
+
+    <script>
+        // Initialize Icons
+        lucide.createIcons();
+        gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
+
+        // Helper: Mobile Menu Toggle
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            if (menu.classList.contains('translate-x-full')) {
+                menu.classList.remove('translate-x-full');
+            } else {
+                menu.classList.add('translate-x-full');
+            }
+        }
+
+        // Helper: Smooth Scroll
+        function scrollToSection(id) {
+            gsap.to(window, {
+                duration: 1.2,
+                scrollTo: { y: "#" + id, offsetY: 100 },
+                ease: "power4.inOut"
+            });
+        }
+
+        function scrollToTop() {
+            gsap.to(window, { duration: 1, scrollTo: 0, ease: "power4.inOut" });
+        }
+
+        // --- GSAP ANIMATIONS ---
+
+        // 1. Hero Reveal
+        gsap.to(".hero-text", {
+            y: 0,
+            opacity: 1,
+            duration: 1,
+            stagger: 0.2,
+            ease: "power4.out",
+            delay: 0.2
+        });
+
+        // 2. Bento Cards Staggered Reveal
+        const cards = document.querySelectorAll('.bento-card');
+        
+        cards.forEach((card, i) => {
+            // Initial State
+            gsap.set(card, { y: 50, opacity: 0 });
+
+            // Scroll Trigger
+            gsap.to(card, {
+                scrollTrigger: {
+                    trigger: card,
+                    start: "top 85%",
+                    toggleActions: "play none none reverse"
+                },
+                y: 0,
+                opacity: 1,
+                duration: 0.8,
+                ease: "power3.out",
+                delay: i % 2 * 0.1 // Simple stagger effect
+            });
+        });
+
+        // 3. Marquee Hover Effect
+        const marquee = document.querySelector('.marquee-container');
+        marquee.addEventListener('mouseenter', () => {
+            document.querySelector('.marquee-content').style.animationPlayState = 'paused';
+        });
+        marquee.addEventListener('mouseleave', () => {
+            document.querySelector('.marquee-content').style.animationPlayState = 'running';
+        });
+
+    </script>
+</body>
+</html>
